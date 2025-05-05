@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lycanthrope Field Notes - Transformation Study</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=IM+Fell+English:ital@0;1&family=Pirata+One&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'IM Fell English', serif;
+            background-color: #f2e8d5;
+            color: #332211;
+            padding: 0;
+            margin: 0;
+            line-height: 1.6;
+            overflow-x: hidden;
+            height: 100vh;
+            background-image: radial-gradient(circle, #d0c8b0 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        /* Journal Cover Styles */
+        .journal-cover {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #5a3e2b;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: transform 1.5s ease-in-out;
+            transform-origin: left center;
+            box-shadow: 5px 0 15px rgba(0, 0, 0, 0.5);
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%235a3e2b"/><path d="M0,0L100,100M0,100L100,0" stroke="%23472f1f" stroke-width="1"/></svg>');
+            background-repeat: repeat;
+            border-right: 15px solid #472f1f;
+        }
+        
+        .journal-cover.open {
+            transform: rotateY(-180deg);
+        }
+        
+        .cover-title {
+            font-family: 'Pirata One', cursive;
+            font-size: 4rem;
+            color: #e8d8c0;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .cover-subtitle {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            font-size: 1.5rem;
+            color: #e8d8c0;
+            text-align: center;
+            margin-bottom: 40px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        .crossed-out {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .crossed-out::after {
+            content: '';
+            position: absolute;
+            left: 2px;
+            top: 10px;
+            right: -1px;
+            bottom: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            transform: rotate(-1deg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(200, 200, 200, 0.3);
+            border-radius: 2px;
+            background-image: linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.8),
+                rgba(240, 240, 240, 0.7)
+            );
+        }
+        
+        .scribbled {
+            font-family: 'Caveat', cursive;
+            font-size: 1.3rem;
+            color: #e8d8c0;
+            display: block;
+            margin-top: 5px;
+            transform: rotate(-2deg);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .classified-label {
+            background-color: #cc0000;
+            color: white;
+            font-family: 'Pirata One', cursive;
+            font-size: 1.2rem;
+            padding: 8px 15px;
+            transform: rotate(-5deg);
+            display: inline-block;
+            border: 2px solid #990000;
+            box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.4);
+            position: relative;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+        
+        .classified-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(0, 0, 0, 0.1),
+                rgba(0, 0, 0, 0.1) 10px,
+                rgba(0, 0, 0, 0.2) 10px,
+                rgba(0, 0, 0, 0.2) 20px
+            );
+        }
+        
+        .classified-label::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px dashed white;
+            pointer-events: none;
+        }
+        
+        .cover-emblem {
+            width: 150px;
+            height: 150px;
+            background-color: #e8d8c0;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .emblem-inner {
+            width: 130px;
+            height: 130px;
+            border: 2px solid #5a3e2b;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Pirata One', cursive;
+            font-size: 3rem;
+            color: #5a3e2b;
+            text-align: center;
+            padding: 10px;
+            position: relative;
+        }
+        
+        /* Removed the full name under I.C.S. as requested */
+        
+        .age-verification {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+        }
+        
+        .age-verification.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .age-verification h2 {
+            margin-bottom: 15px;
+        }
+        
+        .age-verification p {
+            margin-bottom: 20px;
+        }
+        
+        .age-verification button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'IM Fell English', serif;
+            font-size: 1rem;
+        }
+        
+        .age-verification button.yes {
+            background-color: #4a6741;
+            color: white;
+        }
+        
+        .age-verification button.no {
+            background-color: #8c4646;
+            color: white;
+        }
+        
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .content-wrapper.visible {
+            opacity: 1;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #8b7d6b;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            font-size: 1.2rem;
+            color: #665544;
+        }
+        
+        .date {
+            font-family: 'Caveat', cursive;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .image-container {
+            position: relative;
+            margin: 0 auto;
+            width: 80%;
+            max-width: 800px;
+            padding: 15px;
+            background-color: #f9f6f0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transform: rotate(-1deg);
+        }
+        
+        .main-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: 1px solid #d0c8b0;
+        }
+        
+        /* Tape elements */
+        .tape {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            width: 80px;
+            height: 25px;
+            transform: rotate(-5deg);
+            z-index: 7;
+        }
+        
+        .tape-top-left {
+            top: -5px;
+            left: -25px;
+            transform: rotate(-45deg);
+        }
+        
+        .tape-top-right {
+            top: -5px;
+            right: -25px;
+            transform: rotate(45deg);
+        }
+        
+        .tape-bottom-left {
+            bottom: -5px;
+            left: -25px;
+            transform: rotate(45deg);
+        }
+        
+        /* Folded corner */
+        .folded-corner {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 50px 50px;
+            border-color: transparent transparent #e5e0d5 transparent;
+            z-index: 6;
+        }
+        
+        /* Blood stain */
+        .blood-stain {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background-image: url('images/dry_blood.png');
+            background-size: cover;
+            opacity: 0.7;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .blood-stain-1 {
+            top: 10px;
+            left: 18px;
+            transform: rotate(15deg);
+        }
+        
+        .blood-stain-2 {
+            bottom: 40px;
+            right: 20px;
+            width: 80px;
+            height: 80px;
+            transform: rotate(-10deg) scale(0.8);
+            opacity: 0.5;
+        }
+        
+        .hotspot {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(155, 135, 120, 0.6);
+            border: 2px solid #665544;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .hotspot:hover {
+            background-color: rgba(155, 135, 120, 0.9);
+            transform: scale(1.2);
+        }
+        
+        .hotspot.active {
+            background-color: rgba(155, 70, 70, 0.8);
+            border-color: #884444;
+        }
+        
+        .annotation {
+            position: absolute;
+            background-color: #f8f3e9;
+            border: 1px solid #8b7d6b;
+            border-radius: 8px;
+            padding: 15px;
+            width: 280px;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .annotation.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .annotation-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+        }
+        
+        .annotation-text {
+            margin-bottom: 10px;
+        }
+        
+        .annotation-note {
+            font-family: 'Caveat', cursive;
+            font-style: italic;
+            font-size: 1.1rem;
+            color: #665544;
+            border-top: 1px dashed #8b7d6b;
+            padding-top: 8px;
+            margin-top: 8px;
+        }
+        
+        .line {
+            position: absolute;
+            border-top: 2px dashed #665544;
+            transform-origin: left center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .line.visible {
+            opacity: 1;
+        }
+        
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-style: italic;
+            color: #665544;
+            font-size: 0.9rem;
+            border-top: 1px solid #8b7d6b;
+            padding-top: 20px;
+        }
+        
+        .page-number {
+            font-family: 'Caveat', cursive;
+            margin-top: 10px;
+        }
+        
+        /* Artist Credit Styles */
+        .artist-credit {
+            position: absolute;
+            bottom: 45px;
+            right: -5px;
+            font-family: 'Caveat', cursive;
+            font-size: 1rem;
+            color: #665544;
+            transform: rotate(-3deg);
+            text-align: right;
+            line-height: 1.2;
+            max-width: 200px;
+            z-index: 5;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+        }
+        
+        /* Toggle Button Styles */
+        .toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+        }
+        
+        .toggle-label {
+            font-family: 'IM Fell English', serif;
+            font-style: italic;
+            margin-right: 10px;
+            color: #665544;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #8b7d6b;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Censor Toggle Styles */
+        .censor-container {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Censor Elements */
+        .censor-bar {
+            position: absolute;
+            background-color: #000;
+            z-index: 6;
+            display: none;
+            transform-origin: left center;
+        }
+        
+        .censor-bar.visible {
+            display: block;
+            animation: drawCensor 0.5s ease-out forwards;
+        }
+        
+        .censor-text {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .censor-text.censored::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            z-index: 6;
+            animation: drawCensor 0.3s ease-out forwards;
+        }
+        
+        @keyframes drawCensor {
+            0% {
+                transform: scaleX(0);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+        
+        /* Desktop Notification Popup */
+        .desktop-notification {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'IM Fell English', serif;
+            font-size: 0.9rem;
+            max-width: 250px;
+            z-index: 2000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .notification-close {
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: white;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        
+        .notification-close:hover {
+            opacity: 0.7;
+        }
+        
+        /* View All Annotations Button and Popup */
+        .view-all-button {
+            position: absolute;
+            top: 140px;
+            right: 20px;
+            background-color: #8b7d6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-family: 'IM Fell English', serif;
+            font-size: 0.9rem;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+        
+        .view-all-button:hover {
+            background-color: #665544;
+        }
+        
+        .annotations-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #f8f3e9;
+            border: 2px solid #8b7d6b;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 80%;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 2000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+        
+        .annotations-popup.visible {
+            display: block;
+        }
+        
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #8b7d6b;
+            padding-bottom: 10px;
+        }
+        
+        .popup-title {
+            font-family: 'Pirata One', cursive;
+            font-size: 1.5rem;
+            color: #5a3e2b;
+        }
+        
+        .popup-close {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #5a3e2b;
+            transition: opacity 0.3s ease;
+        }
+        
+        .popup-close:hover {
+            opacity: 0.7;
+        }
+        
+        .annotation-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #8b7d6b;
+        }
+        
+        .annotation-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .image-container {
+                width: 100%;
+            }
+            
+            .annotation {
+                width: 220px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="journal-cover" id="journal-cover">
+        <h1 class="cover-title">Lycanthrope Field Notes</h1>
+        <div class="classified-label">CLASSIFIED RESEARCH DOCUMENTS</div>
+        <div class="cover-emblem">
+            <div class="emblem-inner">I.C.S.</div>
+        </div>
+        <div class="cover-subtitle">
+            Property of <span class="crossed-out">Dr. Louie Pyne</span>
+            <span class="scribbled">the U.S. Government</span>
+        </div>
+    </div>
+    
+    <div class="age-verification" id="age-verification">
+        <h2>Content Warning</h2>
+        <p>These field notes contain graphic descriptions of anatomical transformations that may not be suitable for all audiences. You must be 18 years or older to view this content.</p>
+        <button class="yes" id="age-yes">I am 18 or older</button>
+        <button class="no" id="age-no">Exit</button>
+    </div>
+    
+    <div class="desktop-notification" id="desktop-notification">
+        <div class="notification-header">
+            <div class="notification-title">Desktop Recommended</div>
+            <div class="notification-close" id="notification-close">×</div>
+        </div>
+        <div class="notification-content">
+            This site was built for use on desktop browsers, not for mobile devices.
+        </div>
+    </div>
+    
+    <div class="content-wrapper" id="content-wrapper">
+    <header>
+        <h1>Lycanthrope Transformation Study</h1>
+        <div class="subtitle">Field Observations of Subject #247</div>
+        <div class="date">May 4, 2025 - Full Moon</div>
+    </header>
+    
+    <div class="container">
+        <div class="toggle-container">
+            <span class="toggle-label">Show Annotations</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="annotation-toggle" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        
+        <div class="censor-container">
+            <span class="toggle-label">Censor Sensitive Info</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="censor-toggle">
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+        
+        <button class="view-all-button" id="view-all-button">View All Annotations</button>
+        
+        <div class="annotations-popup" id="annotations-popup">
+            <div class="popup-header">
+                <div class="popup-title">All Anatomical Annotations</div>
+                <div class="popup-close" id="popup-close">×</div>
+            </div>
+            <div class="popup-content" id="popup-content">
+            </div>
+        </div>
+        
+        <div class="image-container">
+            <div class="tape tape-top-left"></div>
+            <div class="tape tape-top-right"></div>
+            <div class="tape tape-bottom-left"></div>
+            
+            <div class="folded-corner"></div>
+            
+            <div class="blood-stain blood-stain-1"></div>
+            <div class="blood-stain blood-stain-2"></div>
+            
+            <img src="images/victim.jpg" alt="Werewolf Transformation" class="main-image" id="werewolf-image">
+            
+            <div class="artist-credit">
+                Anatomical depiction by<br>
+                Field Artist @noegenhed<br>
+            </div>
+            
+            <div class="hotspot" id="hotspot-1" style="top: 30%; left: 85%;"></div>
+            <div class="line" id="line-1"></div>
+            <div class="annotation" id="annotation-1">
+                <div class="annotation-title">Canine Dentition Development</div>
+                <div class="annotation-text">
+                    The transformation begins with elongation of canine teeth, growing up to 3x their normal length. Molars sharpen and adapt for tearing flesh rather than grinding vegetation.
+                </div>
+                <div class="annotation-note">
+                    Note: Subject experiences intense oral pain during this phase; teeth growth occurs at approximately 2mm per minute.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div>From the private research journals of Dr. Louie Pyne</div>
+        <div>International Cryptozoological Society (I.C.S.)</div>
+        <div class="page-number">Page 37</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data for hotspots and annotations
+            const hotspots = [
+                {
+                    id: 'hotspot-1',
+                    top: '11%',
+                    left: '81.5%',
+                    annotationTitle: 'Canine Dentition Development',
+                    annotationText: 'The transformation begins with elongation of canine teeth, growing up to 3x their normal length. Molars sharpen and adapt for tearing flesh rather than grinding vegetation.',
+                    annotationNote: 'Note: Subject experiences intense oral pain during this phase; teeth growth occurs at approximately 2mm per minute.',
+                    annotationTop: '20%',
+                    annotationLeft: '85%',
+                    lineWidth: '80px',
+                    lineAngle: '0deg'
+                },
+                {
+                    id: 'hotspot-2',
+                    top: '12%',
+                    left: '73%',
+                    annotationTitle: 'Cranial Restructuring',
+                    annotationText: 'Skull elongates by 40% with particular focus on the mandible and maxilla. Zygomatic arches widen to accommodate larger jaw muscles.',
+                    annotationNote: 'The cracking sounds during this phase are audible from up to 10 meters away.',
+                    annotationTop: '45%',
+                    annotationLeft: '45%',
+                    lineWidth: '70px',
+                    lineAngle: '170deg'
+                },
+                {
+                    id: 'hotspot-3',
+                    top: '45%',
+                    left: '56%',
+                    annotationTitle: 'Muscular Hypertrophy',
+                    annotationText: 'Quadriceps and hamstring muscle mass increases by 250%. New muscle fiber bundles form and, in turn, enhance the sufferer\'s strength and jumping capability.',
+                    annotationNote: 'Subject\'s legs can now generate 3000N of force, sufficient for vertical leaps of up to 4 meters. Found this out the hard way when it jumped over a 2-meter fence.',
+                    annotationTop: '80%',
+                    annotationLeft: '20%',
+                    lineWidth: '60px',
+                    lineAngle: '45deg'
+                },
+                {
+                    id: 'hotspot-4',
+                    top: '36%',
+                    left: '50%',
+                    annotationTitle: 'Dorsal Fur Development',
+                    annotationText: 'Coarse, dense fur grows at a rate of 2cm per minute along the spine. Each follicle produces 3-5 hairs rather than the typical single human hair.',
+                    annotationNote: 'Fur presumably serves as protection against both cold environments and defensive wounds from prey. Hard to say this confidently when it covers such a sparse area.',
+                    annotationTop: '10%',
+                    annotationLeft: '5%',
+                    lineWidth: '50px',
+                    lineAngle: '135deg'
+                },
+                {
+                    id: 'hotspot-5',
+                    top: '66%',
+                    left: '80%',
+                    annotationTitle: 'Paw Formation',
+                    annotationText: 'Human nails thicken into claws. Metacarpal bones elongate while finger bones shorten. Pads develop on the underside in an awkward, awkwardly-paced manner.',
+                    annotationNote: 'Claws can exert up to 400 PSI of pressure, capable of tearing through sheet metal. Yet another lesson learned the hard way.',
+                    annotationTop: '65%',
+                    annotationLeft: '95%',
+                    lineWidth: '65px',
+                    lineAngle: '10deg'
+                },
+                {
+                    id: 'hotspot-6',
+                    top: '51%',
+                    left: '32%',
+                    annotationTitle: 'Sheathus Development',
+                    annotationText: 'The dorsal preputial attachment, colloquially known as the "sheathus," undergoes rapid elasticization. Tissue fibers reorganize to accommodate the enlarged, sheathed penis beneath.',
+                    annotationNote: 'This adaptation allows for... "flexibility" while maintaining structural integrity during quadrupedal locomotion.',
+                    annotationTop: '40%',
+                    annotationLeft: '70%',
+                    lineWidth: '55px',
+                    lineAngle: '135deg'
+                },
+                {
+                    id: 'hotspot-7',
+                    top: '65%',
+                    left: '10%',
+                    annotationTitle: 'Flank Fold Formation',
+                    annotationText: 'The lateral thigh fold develops as skin elasticity increases by ~175%. This fold spans from the thigh to the hock joint, providing crucial flexibility during rapid acceleration and turning maneuvers.',
+                    annotationNote: 'When fully extended during a sprint, these folds technically reduce air resistance to an impressive extent, presumably contributing to the subject\'s enhanced agility.',
+                    annotationTop: '75%',
+                    annotationLeft: '35%',
+                    lineWidth: '70px',
+                    lineAngle: '45deg'
+                },
+                {
+                    id: 'hotspot-8',
+                    top: '80%',
+                    left: '69%',
+                    annotationTitle: 'Claw Sheath Development',
+                    annotationText: 'Translucent keratin sheathes form at the base of each claw, creating protective hollow casings. These structures allow for claw retraction and extension, similar to feline anatomy but with greater robustness.',
+                    annotationNote: 'The sheathes contain specialized nerve endings that provide enhanced tactile feedback, allowing for precise control during both hunting and "climbing" activities.',
+                    annotationTop: '85%',
+                    annotationLeft: '80%',
+                    lineWidth: '60px',
+                    lineAngle: '30deg'
+                },
+                {
+                    id: 'hotspot-9',
+                    top: '55%',
+                    left: '33%',
+                    annotationTitle: 'Prepuce Development',
+                    annotationText: 'The penile sheath (prepuce) forms as a tubular fold of skin and mucous membrane. The outer layer develops normal, hairy skin while the inner lining transforms into a specialized mucous membrane continuous with the penile urethra.',
+                    annotationNote: 'Specialized lubricating glands develop within the inner lining, producing smegma - a protective mixture of dead cells and fluids. The retractor penis muscle simultaneously forms to enable withdrawal into the sheath after protrusion.',
+                    annotationTop: '35%',
+                    annotationLeft: '65%',
+                    lineWidth: '65px',
+                    lineAngle: '135deg'
+                },
+                {
+                    id: 'hotspot-10',
+                    top: '52%',
+                    left: '29%',
+                    annotationTitle: 'Baculum Development',
+                    annotationText: 'A penile bone (baculum) forms through rapid ossification of cartilaginous tissue. This structure, absent in human males but common in canids, provides structural support and enhances reproductive capabilities.',
+                    annotationNote: 'Mineral density scans reveal the baculum achieves full calcification within 4.3 minutes, making it one of the fastest-forming skeletal structures during the transformation process.',
+                    annotationTop: '60%',
+                    annotationLeft: '30%',
+                    lineWidth: '70px',
+                    lineAngle: '225deg'
+                },
+                {
+                    id: 'hotspot-11',
+                    top: '24%',
+                    left: '23%',
+                    annotationTitle: 'Caudal Vertebrae Formation',
+                    annotationText: 'New vertebrae form rapidly at the coccyx, extending outward as the tail develops. Each vertebra pushes against surrounding tissue, creating visible protrusions beneath the skin before being enveloped by developing muscle and connective tissue.',
+                    annotationNote: 'The tail grows at approximately 3cm per minute, with each new vertebra smaller than the last. Neural pathways simultaneously develop, allowing for complex motor control of this new appendage within minutes of formation.',
+                    annotationTop: '50%',
+                    annotationLeft: '5%',
+                    lineWidth: '75px',
+                    lineAngle: '180deg'
+                },
+                {
+                    id: 'hotspot-12',
+                    top: '34%',
+                    left: '19%',
+                    annotationTitle: 'Anal Reconfiguration',
+                    annotationText: 'The external anal sphincter undergoes structural reorganization, adopting a more horizontal orientation. The perianal region develops specialized scent glands similar to canine anal sacs, positioned at approximately 4 and 8 o\'clock relative to the anal opening.',
+                    annotationNote: 'These glands produce a distinct musk that appears to serve territorial marking functions. The sphincter itself demonstrates 87% greater elasticity than human baseline, adapting to the subject\'s altered digestive processes.',
+                    annotationTop: '40%',
+                    annotationLeft: '10%',
+                    lineWidth: '65px',
+                    lineAngle: '210deg'
+                },
+                {
+                    id: 'hotspot-13',
+                    top: '53%',
+                    left: '61%',
+                    annotationTitle: 'Thoracic Reconfiguration',
+                    annotationText: 'The ribcage undergoes dramatic barreling, with ribs elongating laterally and adopting a more pronounced curve. Intercostal spaces widen as the thoracic cavity expands to accommodate enlarged lungs and heart necessary for quadrupedal locomotion.',
+                    annotationNote: 'Bone density increases by 43% during this process, while simultaneously becoming more flexible at costal junctions. This paradoxical combination allows for both greater protection and the respiratory expansion needed for sustained running.',
+                    annotationTop: '25%',
+                    annotationLeft: '10%',
+                    lineWidth: '60px',
+                    lineAngle: '135deg'
+                },
+                {
+                    id: 'hotspot-14',
+                    top: '15%',
+                    left: '68%',
+                    annotationTitle: 'Auricular Transformation',
+                    annotationText: 'Ears elongate and migrate dorsally, with cartilage thickening and developing increased mobility. The pinna adopts a conical shape with enhanced directional sound-gathering capabilities, while the auditory canal lengthens by approximately 37%.',
+                    annotationNote: 'Hearing range expands dramatically, with upper frequency detection increasing from 20kHz to 45kHz. This adaptation allows the subject to detect small prey movements at distances up to 50 meters in optimal conditions.',
+                    annotationTop: '5%',
+                    annotationLeft: '80%',
+                    lineWidth: '55px',
+                    lineAngle: '315deg'
+                },
+                {
+                    id: 'hotspot-15',
+                    top: '35%',
+                    left: '65%',
+                    annotationTitle: 'Cervical Restructuring',
+                    annotationText: 'The neck undergoes significant muscular hypertrophy while cervical vertebrae widen and develop pronounced spinous processes. The nuchal ligament thickens substantially to support the heavier cranium and provide attachment points for enlarged neck muscles.',
+                    annotationNote: 'This restructuring allows for a 180° rotational range while maintaining the strength to carry prey weighing up to 40% of the subject\'s body weight. Vocalization capabilities simultaneously alter to accommodate howling and growling.',
+                    annotationTop: '15%',
+                    annotationLeft: '75%',
+                    lineWidth: '60px',
+                    lineAngle: '45deg'
+                },
+                {
+                    id: 'hotspot-16',
+                    top: '55%',
+                    left: '45%',
+                    annotationTitle: 'Visceral Reorganization',
+                    annotationText: 'Internal organs shift position and alter in size to accommodate quadrupedal posture. The digestive tract shortens by 22% while the stomach expands by 85%. The liver develops enhanced detoxification capabilities to process raw meat and potentially septic food sources.',
+                    annotationNote: 'Most remarkable is the rapid adaptation of the circulatory system, with the heart increasing in size by 60% and developing thicker ventricular walls. Blood volume increases by approximately 3 liters during transformation to support enhanced musculature.',
+                    annotationTop: '70%',
+                    annotationLeft: '25%',
+                    lineWidth: '70px',
+                    lineAngle: '225deg'
+                }
+            ];
+
+            // Create hotspots dynamically
+            const imageContainer = document.querySelector('.image-container');
+            const existingHotspot = document.getElementById('hotspot-1');
+            const existingAnnotation = document.getElementById('annotation-1');
+            const existingLine = document.getElementById('line-1');
+            
+            // Remove example elements
+            if (existingHotspot) existingHotspot.remove();
+            if (existingAnnotation) existingAnnotation.remove();
+            if (existingLine) existingLine.remove();
+            
+            // Create new elements from data
+            hotspots.forEach(spot => {
+                // Create hotspot
+                const hotspot = document.createElement('div');
+                hotspot.className = 'hotspot';
+                hotspot.id = spot.id;
+                hotspot.style.top = spot.top;
+                hotspot.style.left = spot.left;
+                imageContainer.appendChild(hotspot);
+                
+                // Create line
+                const line = document.createElement('div');
+                line.className = 'line';
+                line.id = `line-${spot.id.split('-')[1]}`;
+                imageContainer.appendChild(line);
+                
+                // Create annotation
+                const annotation = document.createElement('div');
+                annotation.className = 'annotation';
+                annotation.id = `annotation-${spot.id.split('-')[1]}`;
+                annotation.style.top = spot.annotationTop;
+                annotation.style.left = spot.annotationLeft;
+                
+                const title = document.createElement('div');
+                title.className = 'annotation-title';
+                title.textContent = spot.annotationTitle;
+                
+                const text = document.createElement('div');
+                text.className = 'annotation-text';
+                text.textContent = spot.annotationText;
+                
+                const note = document.createElement('div');
+                note.className = 'annotation-note';
+                note.textContent = spot.annotationNote;
+                
+                annotation.appendChild(title);
+                annotation.appendChild(text);
+                annotation.appendChild(note);
+                imageContainer.appendChild(annotation);
+                
+                // Set up the line position and angle
+                hotspot.addEventListener('mouseover', function() {
+                    const hotspotRect = hotspot.getBoundingClientRect();
+                    const annotationRect = annotation.getBoundingClientRect();
+                    
+                    const hotspotCenterX = hotspotRect.left + hotspotRect.width / 2;
+                    const hotspotCenterY = hotspotRect.top + hotspotRect.height / 2;
+                    
+                    const annotationX = annotationRect.left + 20;
+                    const annotationY = annotationRect.top + 20;
+                    
+                    const dx = annotationX - hotspotCenterX;
+                    const dy = annotationY - hotspotCenterY;
+                    
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    
+                    line.style.width = `${length}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.style.top = `${hotspotCenterY - imageContainer.getBoundingClientRect().top}px`;
+                    line.style.left = `${hotspotCenterX - imageContainer.getBoundingClientRect().left}px`;
+                    
+                    line.classList.add('visible');
+                    annotation.classList.add('visible');
+                    hotspot.classList.add('active');
+                });
+                
+                hotspot.addEventListener('mouseout', function() {
+                    line.classList.remove('visible');
+                    annotation.classList.remove('visible');
+                    hotspot.classList.remove('active');
+                });
+
+                // Touch device support
+                hotspot.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    
+                    // Hide all other annotations
+                    document.querySelectorAll('.annotation').forEach(a => {
+                        if (a.id !== annotation.id) {
+                            a.classList.remove('visible');
+                        }
+                    });
+                    
+                    document.querySelectorAll('.line').forEach(l => {
+                        if (l.id !== line.id) {
+                            l.classList.remove('visible');
+                        }
+                    });
+                    
+                    document.querySelectorAll('.hotspot').forEach(h => {
+                        if (h.id !== hotspot.id) {
+                            h.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle this annotation
+                    annotation.classList.toggle('visible');
+                    line.classList.toggle('visible');
+                    hotspot.classList.toggle('active');
+                    
+                    // Position the line
+                    const hotspotRect = hotspot.getBoundingClientRect();
+                    const annotationRect = annotation.getBoundingClientRect();
+                    
+                    const hotspotCenterX = hotspotRect.left + hotspotRect.width / 2;
+                    const hotspotCenterY = hotspotRect.top + hotspotRect.height / 2;
+                    
+                    const annotationX = annotationRect.left + 20;
+                    const annotationY = annotationRect.top + 20;
+                    
+                    const dx = annotationX - hotspotCenterX;
+                    const dy = annotationY - hotspotCenterY;
+                    
+                    const length = Math.sqrt(dx * dx + dy * dy);
+                    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                    
+                    line.style.width = `${length}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    line.style.top = `${hotspotCenterY - imageContainer.getBoundingClientRect().top}px`;
+                    line.style.left = `${hotspotCenterX - imageContainer.getBoundingClientRect().left}px`;
+                });
+            });
+
+            // Load the actual image
+            const werewolfImage = document.getElementById('werewolf-image');
+            
+            // Journal cover and age verification functionality
+            const journalCover = document.getElementById('journal-cover');
+            const ageVerification = document.getElementById('age-verification');
+            const contentWrapper = document.getElementById('content-wrapper');
+            const ageYesButton = document.getElementById('age-yes');
+            const ageNoButton = document.getElementById('age-no');
+            
+            // Show age verification after a delay to allow reading the journal cover
+            setTimeout(function() {
+                ageVerification.classList.add('visible');
+            }, 3000); // 3 second delay
+            
+            // Handle age verification
+            ageYesButton.addEventListener('click', function() {
+                ageVerification.classList.remove('visible');
+                
+                // Animate the journal cover opening
+                journalCover.classList.add('open');
+                
+                // After animation completes, show the content
+                setTimeout(function() {
+                    journalCover.style.display = 'none';
+                    contentWrapper.classList.add('visible');
+                }, 1500); // Match this to the CSS transition time
+            });
+            
+            // Handle exit button
+            ageNoButton.addEventListener('click', function() {
+                // Create stylized access denied page with full moon
+                document.body.innerHTML = `
+                    <div style="
+                        background-color: #1a1a2e; 
+                        color: #e8d8c0; 
+                        height: 100vh; 
+                        display: flex; 
+                        flex-direction: column; 
+                        justify-content: center; 
+                        align-items: center; 
+                        font-family: 'IM Fell English', serif;
+                        text-align: center;
+                        padding: 20px;
+                        background-color: #1a1a2e;
+                        background-image: radial-gradient(circle, #252550 1px, transparent 1px);
+                        background-size: 30px 30px;
+                    ">
+                        <div style="
+                            width: 150px;
+                            height: 150px;
+                            border-radius: 50%;
+                            background-color: #e8d8c0;
+                            box-shadow: 0 0 30px 10px rgba(232, 216, 192, 0.5);
+                            margin-bottom: 40px;
+                            position: relative;
+                            overflow: hidden;
+                        ">
+                            <div style="
+                                position: absolute;
+                                width: 30px;
+                                height: 30px;
+                                border-radius: 50%;
+                                background-color: rgba(200, 190, 170, 0.7);
+                                top: 30px;
+                                left: 40px;
+                            "></div>
+                            <div style="
+                                position: absolute;
+                                width: 20px;
+                                height: 20px;
+                                border-radius: 50%;
+                                background-color: rgba(200, 190, 170, 0.5);
+                                top: 70px;
+                                left: 100px;
+                            "></div>
+                            <div style="
+                                position: absolute;
+                                width: 25px;
+                                height: 25px;
+                                border-radius: 50%;
+                                background-color: rgba(200, 190, 170, 0.6);
+                                top: 100px;
+                                left: 50px;
+                            "></div>
+                        </div>
+                        <h1 style="
+                            font-family: 'Pirata One', cursive;
+                            font-size: 3rem;
+                            margin-bottom: 20px;
+                            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+                        ">Access Denied</h1>
+                        <p style="
+                            font-size: 1.2rem;
+                            max-width: 500px;
+                            margin-bottom: 30px;
+                        ">You must be 18 or older to view these classified lycanthrope research documents.</p>
+                        <div style="
+                            font-family: 'Caveat', cursive;
+                            font-style: italic;
+                            color: #8b7d6b;
+                            margin-top: 20px;
+                        ">Return when the moon is full and you are of age...</div>
+                    </div>
+                `;
+                
+                try {
+                    window.close(); // This may not work in all browsers due to security restrictions
+                } catch (e) {
+                    console.log('Could not close window automatically');
+                }
+            });
+            
+            // Handle annotation toggle
+            const annotationToggle = document.getElementById('annotation-toggle');
+            const allHotspots = document.querySelectorAll('.hotspot');
+            
+            annotationToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    // Show hotspots
+                    allHotspots.forEach(hotspot => {
+                        hotspot.style.display = 'block';
+                    });
+                } else {
+                    // Hide hotspots and any visible annotations/lines
+                    allHotspots.forEach(hotspot => {
+                        hotspot.style.display = 'none';
+                    });
+                    
+                    document.querySelectorAll('.annotation').forEach(annotation => {
+                        annotation.classList.remove('visible');
+                    });
+                    
+                    document.querySelectorAll('.line').forEach(line => {
+                        line.classList.remove('visible');
+                    });
+                }
+            });
+            
+            // Handle censor toggle
+            const censorToggle = document.getElementById('censor-toggle');
+            
+            // Define areas to censor
+            const censorAreas = [
+                // Eyes
+                { top: '11.5%', left: '73%', width: '10%', height: '3%' },
+                
+                // Genital areas
+                { top: '50%', left: '26%', width: '15%', height: '10%' } // Prepuce/Sheathus area
+            ];
+            
+            // Create censor bars
+            censorAreas.forEach((area, index) => {
+                const censorBar = document.createElement('div');
+                censorBar.className = 'censor-bar';
+                censorBar.id = `censor-bar-${index}`;
+                censorBar.style.top = area.top;
+                censorBar.style.left = area.left;
+                censorBar.style.width = area.width;
+                censorBar.style.height = area.height;
+                imageContainer.appendChild(censorBar);
+            });
+            
+            // Names to censor
+            const namesToCensor = [
+                // Artist credit
+                document.querySelector('.artist-credit'),
+                
+                // Dr. name in footer
+                document.querySelector('footer div:first-child')
+            ];
+            
+            // Add censor-text class to names
+            namesToCensor.forEach(element => {
+                if (element) {
+                    element.classList.add('censor-text');
+                }
+            });
+            
+            // Toggle censoring
+            censorToggle.addEventListener('change', function() {
+                // Toggle censor bars
+                document.querySelectorAll('.censor-bar').forEach(bar => {
+                    if (this.checked) {
+                        bar.classList.add('visible');
+                    } else {
+                        bar.classList.remove('visible');
+                    }
+                });
+                
+                // Toggle name censoring
+                namesToCensor.forEach(element => {
+                    if (element) {
+                        if (this.checked) {
+                            element.classList.add('censored');
+                        } else {
+                            element.classList.remove('censored');
+                        }
+                    }
+                });
+            });
+            
+            // Handle desktop notification
+            const desktopNotification = document.getElementById('desktop-notification');
+            const notificationClose = document.getElementById('notification-close');
+            
+            // Close notification when X is clicked
+            notificationClose.addEventListener('click', function() {
+                desktopNotification.style.display = 'none';
+            });
+            
+            // Handle View All Annotations button and popup
+            const viewAllButton = document.getElementById('view-all-button');
+            const annotationsPopup = document.getElementById('annotations-popup');
+            const popupClose = document.getElementById('popup-close');
+            const popupContent = document.getElementById('popup-content');
+            
+            // Show popup when button is clicked
+            viewAllButton.addEventListener('click', function() {
+                // Populate the popup with all annotations
+                popupContent.innerHTML = '';
+                
+                hotspots.forEach(spot => {
+                    const annotationItem = document.createElement('div');
+                    annotationItem.className = 'annotation-item';
+                    
+                    const title = document.createElement('div');
+                    title.className = 'annotation-title';
+                    title.textContent = spot.annotationTitle;
+                    
+                    const text = document.createElement('div');
+                    text.className = 'annotation-text';
+                    text.textContent = spot.annotationText;
+                    
+                    const note = document.createElement('div');
+                    note.className = 'annotation-note';
+                    note.textContent = spot.annotationNote;
+                    
+                    annotationItem.appendChild(title);
+                    annotationItem.appendChild(text);
+                    annotationItem.appendChild(note);
+                    
+                    popupContent.appendChild(annotationItem);
+                });
+                
+                // Show the popup
+                annotationsPopup.classList.add('visible');
+            });
+            
+            // Close popup when X is clicked
+            popupClose.addEventListener('click', function() {
+                annotationsPopup.classList.remove('visible');
+            });
+            
+            // Close popup when clicking outside of it
+            window.addEventListener('click', function(e) {
+                if (e.target === annotationsPopup) {
+                    annotationsPopup.classList.remove('visible');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
